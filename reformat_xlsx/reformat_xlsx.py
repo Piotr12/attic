@@ -3,14 +3,14 @@ helper function for parsing an xlsx that has plenty of merged cells added to loo
 """
 from openpyxl import load_workbook
 
-def reformat(file, separator):
+def reformat(file, separator, none_list=[None]):
     """
     A | B | C | D
     1 | 2 | 3 | 4
       | a | 3 | 4
       |   | 3 | 4
     Will get an 1 added in second row and "1 | a" in third.
-    What is considered empty is actually when cell.value==None
+    What is considered empty is actually when cell.value==None unless you provide an optional list of what is considered empty (e.g. (None,""))
     """
     output = ""
     workbook = load_workbook(file)
@@ -28,7 +28,7 @@ def reformat(file, separator):
             column = 0
             line = ""
             for cell in row:
-                if cell.value is not None:
+                if not cell.value in none_list:
                     last_row[column] = cell.value
                 line += str(last_row[column]) + separator
                 column += 1
